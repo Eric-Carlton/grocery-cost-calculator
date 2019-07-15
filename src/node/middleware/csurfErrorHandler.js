@@ -12,9 +12,7 @@ module.exports = {
   use: (err, req, res, next) => {
     if (err.code === 'EBADCSRFTOKEN') {
       log.error(
-        `Invalid CSRF token in ${req.method} request ${req.headers.reqid} to ${
-          req.originalUrl
-        }`
+        `Invalid CSRF token in ${req.method} request ${req.headers.reqid} to ${req.originalUrl}`
       );
       res.status(403).send('Invalid CSRF token');
     } else {

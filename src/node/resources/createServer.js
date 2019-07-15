@@ -3,6 +3,7 @@
 const express = require('express'),
   conf = require('../conf/app.conf'),
   requireDir = require('require-dir-all'),
+  { readdirSync } = require('fs'),
   path = require('path'),
   bunyan = require('bunyan'),
   app = express(),
@@ -19,7 +20,25 @@ const express = require('express'),
   routes = requireDir(
     path.join(path.dirname(require.main.filename), conf.express.routesPath),
     { extensions: ['.js'] }
-  );
+  ),
+  crudOps = readdirSync(
+    path.join(
+      path.dirname(require.main.filename),
+      conf.express.crudOperationsPath
+    ),
+    {
+      withFileTypes: true
+    }
+  )
+    .filter(dirent => dirent.isDirectory())
+    .map(dir =>
+      path.join(
+        path.dirname(require.main.filename),
+        conf.express.crudOperationsPath,
+        dir.name
+      )
+    ),
+  apiRoutesPrefix = conf.express.apiRoutesPrefix || '';
 
 // load middleware and add to app
 Object.keys(middleware)
@@ -34,23 +53,35 @@ Object.keys(middleware)
   });
 
 // load route handlers
-Object.keys(routes)
-  .map(key => {
-    routes[key].name = key;
-    return routes[key];
-  })
-  .forEach(route => {
-    const router = express.Router(),
-      apiRoutesPrefix = conf.express.apiRoutesPrefix || '';
+Object.keys(routes).map(key => {
+  const router = express.Router(),
+    Route = routes[key];
 
-    route.handler(router);
+  log.debug(`Adding route ${key} at path ${apiRoutesPrefix}/${key}`);
 
-    log.debug(
-      `Adding route ${route.name} at path ${apiRoutesPrefix}${route.path}`
-    );
+  new Route(router);
 
-    app.use(`${apiRoutesPrefix}${route.path}`, router);
+  app.use(`${apiRoutesPrefix}/${key}`, router);
+});
+
+// load CRUD operations
+crudOps.forEach(dir => {
+  const router = express.Router(),
+    Operations = requireDir(dir, { extensions: ['.js'] }),
+    routeName = path.basename(dir);
+
+  log.debug(
+    `Adding CRUD route ${routeName} at path ${apiRoutesPrefix}/${routeName}`
+  );
+
+  Object.keys(Operations).map(key => {
+    log.debug(`Adding ${routeName} operation: ${key}`);
+    const Operation = Operations[key];
+    new Operation(router);
   });
+
+  app.use(`${apiRoutesPrefix}/${routeName}`, router);
+});
 
 if (conf.express.static) {
   // Point static path to dist

@@ -5,5 +5,5 @@ const csurf = require('csurf'),
 
 module.exports = {
   priority: 3,
-  use: csurf(conf.csurf)
+  use: conf.disableCsurf ? (req, res, next) => next() : csurf(conf.csurf)
 };

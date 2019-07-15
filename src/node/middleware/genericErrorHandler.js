@@ -10,9 +10,7 @@ const conf = require('../conf/app.conf'),
 module.exports = {
   priority: 100,
   use: (err, req, res, next) => {
-    const errMessage = `Unable to process ${req.method} request ${
-      req.headers.reqid
-    } to ${req.originalUrl}`;
+    const errMessage = `Unable to process ${req.method} request ${req.headers.reqid} to ${req.originalUrl}`;
 
     log.error(errMessage, err);
 
