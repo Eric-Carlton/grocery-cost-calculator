@@ -79,6 +79,7 @@ class Read {
           log.debug(
             `Filtering stores for ${req.headers.reqid} on name '${req.query.name}'`
           );
+
           res.json(stores.filter(store => store.name === req.query.name));
         } else {
           res.json(stores);
