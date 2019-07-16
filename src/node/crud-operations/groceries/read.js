@@ -92,9 +92,8 @@ class Read {
       groceriesDB
         .getGroceriesById()
         .then(groceries => {
-          const filter = new Filter(req);
           res.json(
-            filter.filterGroceries(
+            new Filter(req).filterGroceries(
               groceries,
               req.query.name,
               req.query.unit,
