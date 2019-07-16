@@ -55,7 +55,8 @@ class Delete {
         .then(() => {
           res.json(toDelete);
         })
-        .catch(() => {
+        .catch(err => {
+          log.error(`Error processing ${req.headers.reqid}: ${err}`);
           res.status(500).send();
         });
     }

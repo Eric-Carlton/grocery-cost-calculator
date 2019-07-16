@@ -43,7 +43,7 @@ class Create {
       const storesDB = new StoresDB(req);
 
       storesDB
-        .createStore(req.body.name)
+        .createStore(req.body)
         .then(() => {
           return storesDB.getStoresByName(req.body.name);
         })
@@ -67,6 +67,7 @@ class Create {
               }
             });
           } else {
+            log.error(`Error processing ${req.headers.reqid}: ${err}`);
             res.status(500).send();
           }
         });

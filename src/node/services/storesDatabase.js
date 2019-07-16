@@ -6,11 +6,11 @@ const conf = require('../conf/app.conf'),
     name: 'storesDatabase.js',
     level: conf.log.level
   }),
-  pool = require('./databasePool'),
+  pool = require('./databaseConnectionPool'),
   StandardLog = require('./standardDatabaseLogger');
 
 class StoresDB {
-  constructor(req, log) {
+  constructor(req) {
     this.req = req;
     this.standardLog = new StandardLog(bunyanLogger, req);
   }
@@ -19,7 +19,7 @@ class StoresDB {
     this.standardLog.queryStarted();
 
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * from stores';
+      let query = 'SELECT * FROM stores';
       if (id) {
         query += ` WHERE id = ${pool.escape(id)}`;
       }
@@ -48,7 +48,7 @@ class StoresDB {
         );
         reject(new Error('No name provided'));
       }
-      const query = `SELECT * from stores WHERE name = ${pool.escape(name)}`;
+      const query = `SELECT * FROM stores WHERE name = ${pool.escape(name)}`;
 
       this.standardLog.queryConstructed(query);
 
@@ -64,11 +64,20 @@ class StoresDB {
     });
   }
 
-  createStore(name) {
+  createStore(store) {
     this.standardLog.queryStarted();
 
     return new Promise((resolve, reject) => {
-      const query = `INSERT INTO stores (name) VALUES (${pool.escape(name)})`;
+      if (!store.name) {
+        log.error(
+          `Unable to create store for ${this.req.headers.reqid}: No name provided`
+        );
+        reject(new Error('No name provided'));
+      }
+
+      const query = `INSERT INTO stores (name) VALUES (${pool.escape(
+        store.name
+      )})`;
 
       this.standardLog.queryConstructed(query);
 
@@ -90,13 +99,13 @@ class StoresDB {
     return new Promise((resolve, reject) => {
       if (!store.name) {
         log.error(
-          `Unable to update stores for ${this.req.headers.reqid}: No name provided`
+          `Unable to update store for ${this.req.headers.reqid}: No name provided`
         );
         reject(new Error('No name provided'));
       }
       if (!store.id) {
         log.error(
-          `Unable to update stores for ${this.req.headers.reqid}: No id provided`
+          `Unable to update store for ${this.req.headers.reqid}: No id provided`
         );
         reject(new Error('No id provided'));
       }

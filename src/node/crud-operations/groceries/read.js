@@ -1,13 +1,13 @@
 'use strict';
 
 const conf = require('../../conf/app.conf'),
-  StoresDB = require('../../services/storesDatabase'),
+  GroceriesDB = require('../../services/groceriesDatabase'),
   Filter = require('../../services/filteringService'),
   { param, validationResult, query } = require('express-validator'),
   bunyan = require('bunyan'),
   path = require('path'),
   log = bunyan.createLogger({
-    name: 'stores/read.js',
+    name: 'grocieres/read.js',
     level: conf.log.level
   });
 
@@ -27,7 +27,7 @@ class Read {
           .isNumeric()
           .withMessage('must be numeric')
       ],
-      this.getStoreById
+      this.getGroceryById
     );
     router.get(
       '/',
@@ -35,13 +35,21 @@ class Read {
         query('name')
           .optional()
           .isLength({ min: 0, max: 256 })
-          .withMessage('must be no more than 256 characters')
+          .withMessage('must be no more than 256 characters'),
+        query('unit')
+          .optional()
+          .matches(/^EA|LB$/)
+          .withMessage('must be one of: EA, LB'),
+        query(['costPerUnit', 'storeId'])
+          .optional()
+          .isNumeric()
+          .withMessage('must be numeric')
       ],
-      this.getAllStores
+      this.getAllGroceries
     );
   }
 
-  getStoreById(req, res) {
+  getGroceryById(req, res) {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -51,13 +59,13 @@ class Read {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      const storesDB = new StoresDB(req);
+      const groceriesDB = new GroceriesDB(req);
 
-      storesDB
-        .getStoresById(req.params.id)
-        .then(stores => {
-          if (stores[0]) {
-            res.json(stores[0]);
+      groceriesDB
+        .getGroceriesById(req.params.id)
+        .then(groceries => {
+          if (groceries[0]) {
+            res.json(groceries[0]);
           } else {
             res.status(404).send();
           }
@@ -69,7 +77,7 @@ class Read {
     }
   }
 
-  getAllStores(req, res) {
+  getAllGroceries(req, res) {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -79,12 +87,21 @@ class Read {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      const storesDB = new StoresDB(req);
+      const groceriesDB = new GroceriesDB(req);
 
-      storesDB
-        .getStoresById()
-        .then(stores => {
-          res.json(new Filter(req).filterStores(stores, req.query.name));
+      groceriesDB
+        .getGroceriesById()
+        .then(groceries => {
+          const filter = new Filter(req);
+          res.json(
+            filter.filterGroceries(
+              groceries,
+              req.query.name,
+              req.query.unit,
+              req.query.costPerUnit,
+              req.query.storeId
+            )
+          );
         })
         .catch(err => {
           log.error(`Error processing ${req.headers.reqid}: ${err}`);
