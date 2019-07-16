@@ -1,21 +1,22 @@
 'use strict';
 
 const conf = require('../conf/app.conf'),
-  mysql = require('mysql'),
-  pool = mysql.createPool(conf.mysql),
   bunyan = require('bunyan'),
-  log = bunyan.createLogger({
+  bunyanLogger = bunyan.createLogger({
     name: 'storesDatabase.js',
     level: conf.log.level
-  });
+  }),
+  pool = require('./databasePool'),
+  StandardLog = require('./standardDatabaseLogger');
 
 class StoresDB {
-  constructor(req) {
+  constructor(req, log) {
     this.req = req;
+    this.standardLog = new StandardLog(bunyanLogger, req);
   }
 
   getStoresById(id) {
-    log.debug(`Querying database for ${this.req.headers.reqid}`);
+    this.standardLog.queryStarted();
 
     return new Promise((resolve, reject) => {
       let query = 'SELECT * from stores';
@@ -23,20 +24,14 @@ class StoresDB {
         query += ` WHERE id = ${pool.escape(id)}`;
       }
 
-      log.debug(`Constructed query for ${this.req.headers.reqid}: ${query}`);
+      this.standardLog.queryConstructed(query);
 
       pool.query(query, (err, results) => {
         if (err) {
-          log.error(
-            `Error querying database for ${this.req.headers.reqid}`,
-            err
-          );
+          this.standardLog.queryError(err);
           reject(err);
         } else {
-          log.debug(
-            `DB query successful for ${this.req.headers.reqid}: `,
-            results
-          );
+          this.standardLog.queryComplete(results);
           resolve(Array.from(results));
         }
       });
@@ -44,7 +39,7 @@ class StoresDB {
   }
 
   getStoresByName(name) {
-    log.debug(`Querying database for ${this.req.headers.reqid}`);
+    this.standardLog.queryStarted();
 
     return new Promise((resolve, reject) => {
       if (!name) {
@@ -55,20 +50,14 @@ class StoresDB {
       }
       const query = `SELECT * from stores WHERE name = ${pool.escape(name)}`;
 
-      log.debug(`Constructed query for ${this.req.headers.reqid}: ${query}`);
+      this.standardLog.queryConstructed(query);
 
       pool.query(query, (err, results) => {
         if (err) {
-          log.error(
-            `Error querying database for ${this.req.headers.reqid}`,
-            err
-          );
+          this.standardLog.queryError(err);
           reject(err);
         } else {
-          log.debug(
-            `DB query successful for ${this.req.headers.reqid}: `,
-            results
-          );
+          this.standardLog.queryComplete(results);
           resolve(Array.from(results));
         }
       });
@@ -76,23 +65,79 @@ class StoresDB {
   }
 
   createStore(name) {
+    this.standardLog.queryStarted();
+
     return new Promise((resolve, reject) => {
       const query = `INSERT INTO stores (name) VALUES (${pool.escape(name)})`;
 
-      log.debug(`Constructed query for ${this.req.headers.reqid}: ${query}`);
+      this.standardLog.queryConstructed(query);
 
       pool.query(query, (err, results) => {
         if (err) {
-          log.error(
-            `Error querying database for ${this.req.headers.reqid}`,
-            err
-          );
+          this.standardLog.queryError(err);
           reject(err);
         } else {
-          log.debug(
-            `DB query successful for ${this.req.headers.reqid}: `,
-            results
-          );
+          this.standardLog.queryComplete(results);
+          resolve(results);
+        }
+      });
+    });
+  }
+
+  updateStore(store) {
+    this.standardLog.queryStarted();
+
+    return new Promise((resolve, reject) => {
+      if (!store.name) {
+        log.error(
+          `Unable to update stores for ${this.req.headers.reqid}: No name provided`
+        );
+        reject(new Error('No name provided'));
+      }
+      if (!store.id) {
+        log.error(
+          `Unable to update stores for ${this.req.headers.reqid}: No id provided`
+        );
+        reject(new Error('No id provided'));
+      }
+
+      const query = `UPDATE stores SET name = ${pool.escape(
+        store.name
+      )} WHERE id = ${pool.escape(store.id)}`;
+      this.standardLog.queryConstructed(query);
+
+      pool.query(query, (err, results) => {
+        if (err) {
+          this.standardLog.queryError(err);
+          reject(err);
+        } else {
+          this.standardLog.queryComplete(results);
+          resolve(results);
+        }
+      });
+    });
+  }
+
+  deleteStore(id) {
+    this.standardLog.queryStarted();
+
+    return new Promise((resolve, reject) => {
+      if (!id) {
+        log.error(
+          `Unable to delete store for ${this.req.headers.reqid}: No id provided`
+        );
+        reject(new Error('No id provided'));
+      }
+
+      const query = `DELETE FROM stores WHERE id = ${pool.escape(id)}`;
+      this.standardLog.queryConstructed(query);
+
+      pool.query(query, (err, results) => {
+        if (err) {
+          this.standardLog.queryError(err);
+          reject(err);
+        } else {
+          this.standardLog.queryComplete(results);
           resolve(results);
         }
       });

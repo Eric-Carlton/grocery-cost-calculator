@@ -2,7 +2,7 @@
 
 const conf = require('../../conf/app.conf'),
   StoresDB = require('../../services/storesDatabase'),
-  { body, validationResult } = require('express-validator'),
+  { body, param, validationResult } = require('express-validator'),
   bunyan = require('bunyan'),
   path = require('path'),
   log = bunyan.createLogger({
@@ -10,25 +10,30 @@ const conf = require('../../conf/app.conf'),
     level: conf.log.level
   });
 
-class Create {
+class Update {
   constructor(router) {
     log.debug(
-      `${path.basename(__dirname)} operation: create has one route: POST /`
+      `${path.basename(__dirname)} operation: create has one route: PUT /:id`
     );
-    router.post(
-      '/',
+    router.put(
+      '/:id',
       [
+        param('id')
+          .exists()
+          .withMessage('missing a required parameter')
+          .isNumeric()
+          .withMessage('must be numeric'),
         body('name')
           .exists()
           .withMessage('missing a required parameter')
           .isLength({ min: 1, max: 256 })
           .withMessage('must be between 1 and 256 characters')
       ],
-      this.createStore
+      this.updateStore
     );
   }
 
-  createStore(req, res) {
+  updateStore(req, res) {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -43,35 +48,32 @@ class Create {
       const storesDB = new StoresDB(req);
 
       storesDB
-        .createStore(req.body.name)
+        .getStoresById(req.params.id)
+        .then(result => {
+          if (result[0]) {
+            return storesDB.updateStore({
+              id: result[0].id,
+              name: req.body.name
+            });
+          } else {
+            return res.status(404).send();
+          }
+        })
         .then(() => {
-          return storesDB.getStoresByName(req.body.name);
+          return storesDB.getStoresById(req.params.id);
         })
         .then(result => {
           if (result[0]) {
-            res.status(201).json(result[0]);
+            return res.json(result[0]);
           } else {
             res.status(500).send();
           }
         })
-        .catch(err => {
-          if (err.code === 'ER_DUP_ENTRY') {
-            res.status(409).json({
-              errors: {
-                name: {
-                  value: req.body.name,
-                  msg: 'unable to add duplicate entry',
-                  param: 'name',
-                  location: 'body'
-                }
-              }
-            });
-          } else {
-            res.status(500).send();
-          }
+        .catch(() => {
+          res.status(500).send();
         });
     }
   }
 }
 
-module.exports = Create;
+module.exports = Update;
