@@ -31,7 +31,7 @@ const conf = {
     allowedOrigins: [''],
     exposedHeaders: ['reqid'],
     allowedHeaders: ['content-type'],
-    allowedMethods: ['GET'],
+    allowedMethods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: false
   },
   csurf: { cookie: true },
