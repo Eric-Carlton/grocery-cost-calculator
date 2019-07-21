@@ -6,6 +6,6 @@ CREATE TABLE IF NOT EXISTS groceries (
     unit ENUM('EA', 'LB') NOT NULL,
     cost_per_unit DECIMAL(6,2) NOT NULL,
     store_id INT NOT NULL,
-    updated_date DATE NOT NULL,
+    last_updated_date DATE NOT NULL,
     CONSTRAINT UNIQUE store_item (name, store_id)
 );
