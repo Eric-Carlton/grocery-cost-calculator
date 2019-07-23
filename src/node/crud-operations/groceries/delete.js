@@ -25,11 +25,11 @@ class Delete {
           .isNumeric()
           .withMessage('must be numeric')
       ],
-      this.deleteStore
+      this.deleteGrocery
     );
   }
 
-  deleteStore(req, res) {
+  deleteGrocery(req, res) {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -39,7 +39,7 @@ class Delete {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      const db = new DB(req, conf.dbTables.stores);
+      const db = new DB(req, conf.dbTables.groceries);
 
       let toDelete;
 

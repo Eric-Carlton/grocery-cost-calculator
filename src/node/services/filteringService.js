@@ -12,58 +12,42 @@ class FilteringService {
     this.req = req;
   }
 
-  filterStores(stores, name) {
-    if (name) {
-      name = name.toUpperCase();
+  filterObjectOnlyKnownKeys(object, knownKeys) {
+    const result = {};
 
-      log.debug(
-        `Filtering stores for ${this.req.headers.reqid} on name '${name}'`
-      );
-
-      stores = stores.filter(store => store.name === name);
+    for (const key in object) {
+      if (knownKeys.includes(key)) {
+        result[key] = object[key];
+      }
     }
 
-    return stores;
+    return result;
   }
 
-  filterGroceries(groceries, name, unit, costPerUnit, storeId) {
-    if (name) {
-      name = name.toUpperCase();
+  filterNullValues(object) {
+    const result = {};
 
-      log.debug(
-        `Filtering groceries for ${this.req.headers.reqid} on name '${name}'`
-      );
-
-      groceries = groceries.filter(grocery => grocery.name === name);
+    for (const key in object) {
+      if (object[key] != null) {
+        result[key] = object[key];
+      }
     }
 
-    if (unit) {
-      log.debug(
-        `Filtering groceries for ${this.req.headers.reqid} on unit '${unit}'`
-      );
+    return result;
+  }
 
-      groceries = groceries.filter(grocery => grocery.unit === unit);
-    }
+  filterCollection(collection, filters) {
+    log.debug(
+      `Filtering collection: ${JSON.stringify(
+        collection
+      )} with ${JSON.stringify(filters)} for ${this.req.headers.reqid}`
+    );
 
-    if (costPerUnit) {
-      log.debug(
-        `Filtering groceries for ${this.req.headers.reqid} on cost per unit '${costPerUnit}'`
-      );
-
-      groceries = groceries.filter(
-        grocery => grocery.cost_per_unit == costPerUnit
-      );
-    }
-
-    if (storeId) {
-      log.debug(
-        `Filtering groceries for ${this.req.headers.reqid} on storeId '${storeId}'`
-      );
-
-      groceries = groceries.filter(grocery => grocery.store_id == storeId);
-    }
-
-    return groceries;
+    return collection.filter(item =>
+      Object.keys(filters).every(key =>
+        filters[key] != null ? filters[key] == item[key] : true
+      )
+    );
   }
 }
 

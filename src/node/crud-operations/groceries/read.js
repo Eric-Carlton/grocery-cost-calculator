@@ -1,8 +1,9 @@
 'use strict';
 
 const conf = require('../../conf/app.conf'),
-  GroceriesDB = require('../../services/groceriesDatabase'),
+  DB = require('../../services/database'),
   Filter = require('../../services/filteringService'),
+  Formatter = require('../../services/formattingService'),
   { param, validationResult, query } = require('express-validator'),
   bunyan = require('bunyan'),
   path = require('path'),
@@ -59,13 +60,12 @@ class Read {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      const groceriesDB = new GroceriesDB(req);
+      const db = new DB(req, conf.dbTables.groceries);
 
-      groceriesDB
-        .getGroceriesById(req.params.id)
+      db.get({ id: req.params.id })
         .then(groceries => {
           if (groceries[0]) {
-            res.json(groceries[0]);
+            res.json(new Formatter(req).formatKeysSnakeToCamel(groceries[0]));
           } else {
             res.status(404).send();
           }
@@ -87,18 +87,27 @@ class Read {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      const groceriesDB = new GroceriesDB(req);
+      const db = new DB(req, conf.dbTables.groceries);
 
-      groceriesDB
-        .getGroceriesById()
+      db.get()
         .then(groceries => {
+          const filter = new Filter(req);
+
+          req.query = filter.filterObjectOnlyKnownKeys(req.query, [
+            'name',
+            'unit',
+            'costPerUnit',
+            'storeId',
+            'id',
+            'lastUpdateDate'
+          ]);
+
           res.json(
-            new Filter(req).filterGroceries(
-              groceries,
-              req.query.name,
-              req.query.unit,
-              req.query.costPerUnit,
-              req.query.storeId
+            filter.filterCollection(
+              new Formatter(req).formatCollectionKeysSnakeToCamel(groceries),
+              Object.assign({}, req.query, {
+                name: req.query.name ? req.query.name.toUpperCase() : null
+              })
             )
           );
         })

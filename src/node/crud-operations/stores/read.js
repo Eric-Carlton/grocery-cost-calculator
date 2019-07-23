@@ -1,8 +1,9 @@
 'use strict';
 
 const conf = require('../../conf/app.conf'),
-  StoresDB = require('../../services/storesDatabase'),
+  DB = require('../../services/database'),
   Filter = require('../../services/filteringService'),
+  Formatter = require('../../services/formattingService'),
   { param, validationResult, query } = require('express-validator'),
   bunyan = require('bunyan'),
   path = require('path'),
@@ -51,13 +52,12 @@ class Read {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      const storesDB = new StoresDB(req);
+      const db = new DB(req, conf.dbTables.stores);
 
-      storesDB
-        .getStoresById(req.params.id)
+      db.get({ id: req.params.id })
         .then(stores => {
           if (stores[0]) {
-            res.json(stores[0]);
+            res.json(new Formatter(req).formatKeysSnakeToCamel(stores[0]));
           } else {
             res.status(404).send();
           }
@@ -79,12 +79,25 @@ class Read {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      const storesDB = new StoresDB(req);
+      const db = new DB(req, conf.dbTables.stores);
 
-      storesDB
-        .getStoresById()
+      db.get()
         .then(stores => {
-          res.json(new Filter(req).filterStores(stores, req.query.name));
+          const filter = new Filter(req);
+
+          req.query = filter.filterObjectOnlyKnownKeys(req.query, [
+            'name',
+            'id'
+          ]);
+
+          res.json(
+            filter.filterCollection(
+              new Formatter(req).formatCollectionKeysSnakeToCamel(stores),
+              Object.assign({}, req.query, {
+                name: req.query.name ? req.query.name.toUpperCase() : undefined
+              })
+            )
+          );
         })
         .catch(err => {
           log.error(`Error processing ${req.headers.reqid}: ${err}`);

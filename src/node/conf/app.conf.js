@@ -47,6 +47,10 @@ const conf = {
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     database: process.env.DB
+  },
+  dbTables: {
+    stores: 'stores',
+    groceries: 'groceries'
   }
 };
 

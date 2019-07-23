@@ -9,8 +9,8 @@ const conf = require('../../conf/app.conf'),
     name: 'stores/create.js',
     level: conf.log.level
   }),
-  Formatter = require('../../services/formattingService'),
-  Filter = require('../../services/filteringService');
+  Filter = require('../../services/filteringService'),
+  Formatter = require('../../services/formattingService');
 
 class Create {
   constructor(router) {
@@ -23,14 +23,24 @@ class Create {
         body('name')
           .exists()
           .withMessage('missing a required parameter')
-          .isLength({ min: 1, max: 256 })
-          .withMessage('must be between 1 and 256 characters')
+          .isLength({ min: 0, max: 256 })
+          .withMessage('must be no more than 256 characters'),
+        body('unit')
+          .exists()
+          .withMessage('missing a required parameter')
+          .matches(/^EA|LB$/)
+          .withMessage('must be one of: EA, LB'),
+        body(['costPerUnit', 'storeId'])
+          .exists()
+          .withMessage('missing a required parameter')
+          .isNumeric()
+          .withMessage('must be numeric')
       ],
-      this.createStore
+      this.createGrocery
     );
   }
 
-  createStore(req, res) {
+  createGrocery(req, res) {
     const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
@@ -43,11 +53,29 @@ class Create {
       const formatter = new Formatter(req);
 
       req.body = formatter.formatKeysCamelToSnake(
-        new Filter(req).filterObjectOnlyKnownKeys(req.body, ['name'])
+        new Filter(req).filterObjectOnlyKnownKeys(req.body, [
+          'name',
+          'unit',
+          'costPerUnit',
+          'storeId'
+        ])
       );
-      req.body.name = req.body.name.toUpperCase();
 
-      const db = new DB(req, conf.dbTables.stores);
+      const now = new Date(),
+        dateString = `${now
+          .getUTCFullYear()
+          .toString()
+          .padStart(4, '0')}${(now.getUTCMonth() + 1)
+          .toString()
+          .padStart(2, '0')}${now
+          .getUTCDate()
+          .toString()
+          .padStart(2, '0')}`;
+
+      req.body.name = req.body.name.toUpperCase();
+      req.body['last_updated_date'] = dateString;
+
+      const db = new DB(req, conf.dbTables.groceries);
 
       db.create(req.body)
         .then(() => {
@@ -68,6 +96,12 @@ class Create {
                   value: req.body.name,
                   msg: 'unable to add duplicate entry',
                   param: 'name',
+                  location: 'body'
+                },
+                storeId: {
+                  value: req.body.storeId,
+                  msg: 'unable to add duplicate entry',
+                  param: 'storeId',
                   location: 'body'
                 }
               }
