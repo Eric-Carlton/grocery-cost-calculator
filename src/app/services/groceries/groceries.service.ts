@@ -9,7 +9,7 @@ import { Store } from '../../models/store.model';
 import { Grocery } from '../../models/grocery.model';
 
 import { environment } from '../../../environments/environment';
-import { zip, ReplaySubject, BehaviorSubject } from 'rxjs';
+import { zip, ReplaySubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
