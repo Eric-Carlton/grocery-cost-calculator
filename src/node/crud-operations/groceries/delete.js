@@ -6,7 +6,7 @@ const conf = require('../../conf/app.conf'),
   bunyan = require('bunyan'),
   path = require('path'),
   log = bunyan.createLogger({
-    name: 'stores/delete.js',
+    name: 'groceries/delete.js',
     level: conf.log.level
   }),
   Formatter = require('../../services/formattingService');

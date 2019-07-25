@@ -107,6 +107,18 @@ class DB {
       this._runQuery(query, resolve, reject);
     });
   }
+
+  checkConnection() {
+    this.standardLog.queryStarted();
+
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT version()';
+
+      this.standardLog.queryConstructed(query);
+
+      this._runQuery(query, resolve, reject);
+    });
+  }
 }
 
 module.exports = DB;

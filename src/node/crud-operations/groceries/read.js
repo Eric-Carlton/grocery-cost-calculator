@@ -8,7 +8,7 @@ const conf = require('../../conf/app.conf'),
   bunyan = require('bunyan'),
   path = require('path'),
   log = bunyan.createLogger({
-    name: 'grocieres/read.js',
+    name: 'groceries/read.js',
     level: conf.log.level
   });
 
