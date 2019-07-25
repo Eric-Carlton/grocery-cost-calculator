@@ -1,0 +1,46 @@
+<section>
+  <form>
+    <label for="stores">Stores: </label>
+    <select [(ngModel)]="selectedStore" name="stores" required>
+      <option [ngValue]="undefined" selected hidden disabled
+        >Select a store...</option
+      >
+      <option
+        *ngFor="let store of stores"
+        [ngValue]="store"
+        [innerText]="store.name"
+      ></option>
+    </select>
+  </form>
+  <div *ngIf="selectedStore">
+    <h2>Selected Store</h2>
+    <p>ID: {{ selectedStore.id }}</p>
+    <p>Name: {{ selectedStore.name }}</p>
+  </div>
+</section>
+
+<section>
+  <form>
+    <label for="groceries">Groceries: </label>
+    <select [(ngModel)]="selectedGrocery" name="groceries" required>
+      <option [ngValue]="undefined" selected hidden disabled
+        >Select a grocery...</option
+      >
+      <option
+        *ngFor="let grocery of groceries"
+        [ngValue]="grocery"
+        [innerText]="grocery.name"
+      ></option>
+    </select>
+  </form>
+  <div *ngIf="selectedGrocery">
+    <h2>Selected Grocery</h2>
+    <p>ID: {{ selectedGrocery.id }}</p>
+    <p>Name: {{ selectedGrocery.name }}</p>
+    <p>Unit: {{ selectedGrocery.unit }}</p>
+    <p>Cost Per Unit: {{ selectedGrocery.costPerUnit }}</p>
+    <p>Store ID: {{ selectedGrocery.storeId }}</p>
+    <p>Store Name: {{ selectedGrocery.storeName }}</p>
+    <p>Last Updated: {{ selectedGrocery.lastUpdatedDate }}</p>
+  </div>
+</section>

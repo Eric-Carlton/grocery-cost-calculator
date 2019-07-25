@@ -28,7 +28,7 @@ const conf = {
     }
   },
   cors: {
-    allowedOrigins: [''],
+    allowedOrigins: ['http://localhost:4200'],
     exposedHeaders: ['reqid'],
     allowedHeaders: ['content-type'],
     allowedMethods: ['GET', 'POST', 'PUT', 'DELETE'],
