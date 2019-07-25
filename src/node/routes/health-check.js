@@ -3,7 +3,6 @@
 const conf = require('../conf/app.conf'),
   DB = require('../services/database'),
   bunyan = require('bunyan'),
-  path = require('path'),
   log = bunyan.createLogger({
     name: 'routes/health-check.js',
     level: conf.log.level
