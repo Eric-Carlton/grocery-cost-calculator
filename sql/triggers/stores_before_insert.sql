@@ -5,3 +5,5 @@ BEGIN
 	SET NEW.last_updated_date = SYSDATE();
 END; //
 DELIMITER ;
+
+-- test
