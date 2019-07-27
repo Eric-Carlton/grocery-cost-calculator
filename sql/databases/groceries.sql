@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS groceries;
+USE groceries;

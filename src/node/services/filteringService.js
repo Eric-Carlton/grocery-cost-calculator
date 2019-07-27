@@ -13,6 +13,14 @@ class FilteringService {
   }
 
   filterObjectOnlyKnownKeys(object, knownKeys) {
+    log.debug(
+      `Filtering object keys: ${JSON.stringify(
+        object
+      )} to only include known values: ${JSON.stringify(knownKeys)} for ${
+        this.req.headers.reqid
+      }`
+    );
+
     const result = {};
 
     for (const key in object) {
@@ -25,6 +33,12 @@ class FilteringService {
   }
 
   filterNullValues(object) {
+    log.debug(
+      `Filtering object keys with null values from : ${JSON.stringify(
+        object
+      )} for ${this.req.headers.reqid}`
+    );
+
     const result = {};
 
     for (const key in object) {

@@ -50,18 +50,19 @@ class Create {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      const formatter = new Formatter(req);
+      const formatter = new Formatter(req),
+        filter = new Filter(req);
 
-      req.body = formatter.formatKeysCamelToSnake(
-        new Filter(req).filterObjectOnlyKnownKeys(req.body, [
-          'name',
-          'unit',
-          'costPerUnit',
-          'storeId'
-        ])
+      req.body = filter.filterNullValues(
+        formatter.formatKeysCamelToSnake(
+          filter.filterObjectOnlyKnownKeys(req.body, [
+            'name',
+            'unit',
+            'costPerUnit',
+            'storeId'
+          ])
+        )
       );
-
-      req.body.last_updated_date = formatter.getFormattedDate();
 
       const db = new DB(req, conf.dbTables.groceries);
 

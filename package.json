@@ -13,7 +13,8 @@
     "prettier:node": "prettier --write 'src/node/**/*.{js,json}'",
     "prettier:angular": "prettier --write 'src/app/**/*.{ts,json,md,html}'",
     "e2e": "ng e2e",
-    "heroku-postbuild": "ng build --prod"
+    "heroku-postbuild": "ng build --prod",
+    "create-db-init": "node scripts/create-db-init"
   },
   "private": true,
   "dependencies": {
@@ -70,7 +71,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "npm run create-db-init && lint-staged"
     }
   },
   "lint-staged": {

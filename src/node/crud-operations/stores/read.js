@@ -85,10 +85,9 @@ class Read {
         .then(stores => {
           const filter = new Filter(req);
 
-          req.query = filter.filterObjectOnlyKnownKeys(req.query, [
-            'name',
-            'id'
-          ]);
+          req.query = filter.filterNullValues(
+            filter.filterObjectOnlyKnownKeys(req.query, ['name', 'id'])
+          );
 
           res.json(
             filter.filterCollection(

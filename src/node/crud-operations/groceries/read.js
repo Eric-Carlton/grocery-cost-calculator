@@ -93,14 +93,16 @@ class Read {
         .then(groceries => {
           const filter = new Filter(req);
 
-          req.query = filter.filterObjectOnlyKnownKeys(req.query, [
-            'name',
-            'unit',
-            'costPerUnit',
-            'storeId',
-            'id',
-            'lastUpdateDate'
-          ]);
+          req.query = filter.filterNullValues(
+            filter.filterObjectOnlyKnownKeys(req.query, [
+              'name',
+              'unit',
+              'costPerUnit',
+              'storeId',
+              'id',
+              'lastUpdateDate'
+            ])
+          );
 
           res.json(
             filter.filterCollection(

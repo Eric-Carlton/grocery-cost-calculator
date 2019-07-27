@@ -47,13 +47,7 @@ class Update {
       const formatter = new Formatter(req),
         filter = new Filter(req);
 
-      req.body = filter.filterNullValues(
-        formatter.formatKeysCamelToSnake(
-          filter.filterObjectOnlyKnownKeys(req.body, ['name'])
-        )
-      );
-
-      req.body.last_updated_date = formatter.getFormattedDate();
+      req.body = formatter.formatkeysCamelToSnake(req.body);
 
       const db = new DB(req, conf.dbTables.stores);
 
@@ -62,7 +56,12 @@ class Update {
           if (result[0]) {
             return db.update(
               result[0].id,
-              Object.assign({}, result[0], req.body)
+              filter.filterNullValues(
+                filter.filterObjectOnlyKnownKeys(
+                  Object.assign({}, result[0], req.body),
+                  ['name']
+                )
+              )
             );
           } else {
             return res.status(404).send();
