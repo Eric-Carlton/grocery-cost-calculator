@@ -14,8 +14,13 @@
   </form>
   <div *ngIf="selectedStore">
     <h2>Selected Store</h2>
-    <p>ID: {{ selectedStore.id }}</p>
-    <p>Name: {{ selectedStore.name }}</p>
+    <p *ngFor="let property of selectedStore | keyvalue">
+      <span style="font-weight: bold;">{{
+        utils.camelToDisplay(property.key)
+      }}</span>
+      <span>: </span>
+      <span>{{ property.value }}</span>
+    </p>
   </div>
 </section>
 
@@ -35,12 +40,12 @@
   </form>
   <div *ngIf="selectedGrocery">
     <h2>Selected Grocery</h2>
-    <p>ID: {{ selectedGrocery.id }}</p>
-    <p>Name: {{ selectedGrocery.name }}</p>
-    <p>Unit: {{ selectedGrocery.unit }}</p>
-    <p>Cost Per Unit: {{ selectedGrocery.costPerUnit }}</p>
-    <p>Store ID: {{ selectedGrocery.storeId }}</p>
-    <p>Store Name: {{ selectedGrocery.storeName }}</p>
-    <p>Last Updated: {{ selectedGrocery.lastUpdatedDate }}</p>
+    <p *ngFor="let property of selectedGrocery | keyvalue">
+      <span style="font-weight: bold;">{{
+        utils.camelToDisplay(property.key)
+      }}</span>
+      <span>: </span>
+      <span>{{ property.value }}</span>
+    </p>
   </div>
 </section>
