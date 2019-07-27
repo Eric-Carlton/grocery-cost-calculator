@@ -30,8 +30,6 @@ export class GroceriesService {
       this.http.get(environment.groceriesEndpoint),
       this.storesService.stores
     ).subscribe(([groceries, stores]: [Object[], Store[]]) => {
-      console.log(groceries);
-      console.log(stores);
       this._groceries.next(
         plainToClass(Grocery, groceries).map(grocery =>
           Object.assign(grocery, {
