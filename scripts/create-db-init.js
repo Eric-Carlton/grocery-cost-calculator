@@ -3,7 +3,7 @@
 const fs = require('fs'),
   path = require('path'),
   sqlFolderPath = 'sql',
-  initializationFileName = 'initilization.sql';
+  initializationFileName = 'initialization.sql';
 
 function readAllFilesInDirectory(directory) {
   let result = '';
