@@ -84,6 +84,20 @@ class FormattingService {
 
     return result;
   }
+
+  getFormattedDate() {
+    const now = new Date();
+
+    return `${now
+      .getUTCFullYear()
+      .toString()
+      .padStart(4, '0')}${(now.getUTCMonth() + 1)
+      .toString()
+      .padStart(2, '0')}${now
+      .getUTCDate()
+      .toString()
+      .padStart(2, '0')}`;
+  }
 }
 
 module.exports = FormattingService;

@@ -52,8 +52,6 @@ class Update {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      req.body.name = req.body.name ? req.body.name : null;
-
       const formatter = new Formatter(req),
         filter = new Filter(req);
 
@@ -68,18 +66,7 @@ class Update {
         )
       );
 
-      const now = new Date(),
-        dateString = `${now
-          .getUTCFullYear()
-          .toString()
-          .padStart(4, '0')}${(now.getUTCMonth() + 1)
-          .toString()
-          .padStart(2, '0')}${now
-          .getUTCDate()
-          .toString()
-          .padStart(2, '0')}`;
-
-      req.body['last_updated_date'] = dateString;
+      req.body.last_updated_date = formatter.getFormattedDate();
 
       const db = new DB(req, conf.dbTables.groceries);
 

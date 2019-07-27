@@ -44,8 +44,6 @@ class Update {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      req.body.name = req.body.name ? req.body.name : undefined;
-
       const formatter = new Formatter(req),
         filter = new Filter(req);
 
@@ -54,6 +52,8 @@ class Update {
           filter.filterObjectOnlyKnownKeys(req.body, ['name'])
         )
       );
+
+      req.body.last_updated_date = formatter.getFormattedDate();
 
       const db = new DB(req, conf.dbTables.stores);
 
