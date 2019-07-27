@@ -44,7 +44,7 @@ class Update {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      req.body.name = req.body.name ? req.body.name.toUpperCase() : undefined;
+      req.body.name = req.body.name ? req.body.name : undefined;
 
       const formatter = new Formatter(req),
         filter = new Filter(req);

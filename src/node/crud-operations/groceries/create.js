@@ -72,7 +72,6 @@ class Create {
           .toString()
           .padStart(2, '0')}`;
 
-      req.body.name = req.body.name.toUpperCase();
       req.body['last_updated_date'] = dateString;
 
       const db = new DB(req, conf.dbTables.groceries);

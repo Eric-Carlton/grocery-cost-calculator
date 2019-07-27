@@ -45,7 +45,7 @@ class Create {
       req.body = formatter.formatKeysCamelToSnake(
         new Filter(req).filterObjectOnlyKnownKeys(req.body, ['name'])
       );
-      req.body.name = req.body.name.toUpperCase();
+      req.body.name = req.body.name;
 
       const db = new DB(req, conf.dbTables.stores);
 

@@ -52,7 +52,7 @@ class Update {
 
       return res.status(400).json({ errors: errorMap });
     } else {
-      req.body.name = req.body.name ? req.body.name.toUpperCase() : null;
+      req.body.name = req.body.name ? req.body.name : null;
 
       const formatter = new Formatter(req),
         filter = new Filter(req);

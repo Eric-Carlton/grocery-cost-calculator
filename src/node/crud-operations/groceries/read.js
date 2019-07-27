@@ -106,7 +106,7 @@ class Read {
             filter.filterCollection(
               new Formatter(req).formatCollectionKeysSnakeToCamel(groceries),
               Object.assign({}, req.query, {
-                name: req.query.name ? req.query.name.toUpperCase() : null
+                name: req.query.name ? req.query.name : null
               })
             )
           );

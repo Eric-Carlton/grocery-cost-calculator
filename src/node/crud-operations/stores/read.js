@@ -94,7 +94,7 @@ class Read {
             filter.filterCollection(
               new Formatter(req).formatCollectionKeysSnakeToCamel(stores),
               Object.assign({}, req.query, {
-                name: req.query.name ? req.query.name.toUpperCase() : undefined
+                name: req.query.name ? req.query.name : undefined
               })
             )
           );

@@ -44,9 +44,23 @@ class FilteringService {
     );
 
     return collection.filter(item =>
-      Object.keys(filters).every(key =>
-        filters[key] != null ? filters[key] == item[key] : true
-      )
+      Object.keys(filters).every(key => {
+        if (filters[key] != null) {
+          // case insensitive match for string
+          const caseInsensitiveFilter =
+              typeof filters[key] === 'string'
+                ? filters[key].toUpperCase()
+                : filters[key],
+            caseInsensitiveItem =
+              typeof item[key] === 'string'
+                ? item[key].toUpperCase()
+                : item[key];
+
+          return caseInsensitiveFilter === caseInsensitiveItem;
+        }
+
+        return true;
+      })
     );
   }
 }
