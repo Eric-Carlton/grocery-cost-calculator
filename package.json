@@ -71,7 +71,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run create-db-init && lint-staged"
+      "pre-commit": "npm run create-db-init && git add sql/initialization.sql && lint-staged"
     }
   },
   "lint-staged": {
