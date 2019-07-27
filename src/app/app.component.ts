@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { LogInterceptorService } from './services/log-interceptor/log-interceptor.service';
+
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +9,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'grocery-cost-calculator';
+  constructor(logInterceptorService: LogInterceptorService) {
+    if (environment.interceptLogs) {
+      logInterceptorService.interceptLogs();
+    }
+  }
 }

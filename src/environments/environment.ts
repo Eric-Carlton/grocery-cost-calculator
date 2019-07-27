@@ -5,7 +5,11 @@
 export const environment = {
   production: false,
   storesEndpoint: 'http://localhost:3000/api/stores',
-  groceriesEndpoint: 'http://localhost:3000/api/groceries'
+  groceriesEndpoint: 'http://localhost:3000/api/groceries',
+  logInterceptorEndpoint: 'http://localhost:3000/api/client-logger',
+  interceptLogs: {
+    maxLevel: 'debug'
+  }
 };
 
 /*
