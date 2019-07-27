@@ -89,12 +89,10 @@ class FormattingService {
     const now = new Date();
 
     return `${now
-      .getUTCFullYear()
+      .getFullYear()
       .toString()
-      .padStart(4, '0')}${(now.getUTCMonth() + 1)
-      .toString()
-      .padStart(2, '0')}${now
-      .getUTCDate()
+      .padStart(4, '0')}${(now.getMonth() + 1).toString().padStart(2, '0')}${now
+      .getDate()
       .toString()
       .padStart(2, '0')}`;
   }
