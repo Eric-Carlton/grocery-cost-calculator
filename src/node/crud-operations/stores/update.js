@@ -47,7 +47,7 @@ class Update {
       const formatter = new Formatter(req),
         filter = new Filter(req);
 
-      req.body = formatter.formatkeysCamelToSnake(req.body);
+      req.body = formatter.formatKeysCamelToSnake(req.body);
 
       const db = new DB(req, conf.dbTables.stores);
 

@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { map } from 'rxjs/operators';
-
 import { plainToClass } from 'class-transformer';
 
 import { Store } from '../../models/store.model';
 
 import { environment } from '../../../environments/environment';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, zip } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -28,5 +26,27 @@ export class StoresService {
     this.http.get(environment.storesEndpoint).subscribe((stores: Object[]) => {
       this._stores.next(plainToClass(Store, stores));
     });
+  }
+
+  addStore(store: Store) {
+    this.http.post(environment.storesEndpoint, store).subscribe(() => {
+      this.refreshStores();
+    });
+  }
+
+  updateStore(store: Store) {
+    this.http
+      .put(`${environment.storesEndpoint}/${store.id}`, store)
+      .subscribe(() => {
+        this.refreshStores();
+      });
+  }
+
+  deleteStore(store: Store) {
+    this.http
+      .delete(`${environment.storesEndpoint}/${store.id}`)
+      .subscribe(() => {
+        this.refreshStores();
+      });
   }
 }

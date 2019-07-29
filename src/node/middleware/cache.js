@@ -35,31 +35,35 @@ function setCache(key, value) {
 
 module.exports = {
   priority: 5,
-  use: (req, res, next) => {
-    if (req.method === 'GET') {
-      const cacheKey = req.url,
-        cachedRes = getCached(cacheKey);
+  use: conf.cacheOpts
+    ? (req, res, next) => {
+        if (req.method === 'GET') {
+          const cacheKey = req.url,
+            cachedRes = getCached(cacheKey);
 
-      if (cachedRes) {
-        log.trace(
-          `Responding to ${req.method} request ${req.headers.reqid} to ${req.originalUrl} with cached data`
-        );
-        return res.json(JSON.parse(cachedRes));
-        // do not call next here since a response has already been sent
-      } else {
-        const original = res.send;
-        res.send = function(body) {
-          if (res.statusCode === 200) {
-            setCache(cacheKey, body);
+          if (cachedRes) {
+            log.trace(
+              `Responding to ${req.method} request ${req.headers.reqid} to ${req.originalUrl} with cached data`
+            );
+            return res.json(JSON.parse(cachedRes));
+            // do not call next here since a response has already been sent
+          } else {
+            const original = res.send;
+            res.send = function(body) {
+              if (res.statusCode === 200) {
+                setCache(cacheKey, body);
+              }
+              res.send = original;
+              res.send.apply(res, arguments);
+            };
+            // no cached response, so continue handling
+            return next();
           }
-          res.send = original;
-          res.send.apply(res, arguments);
-        };
-        // no cached response, so continue handling
-        return next();
-      }
-    }
+        }
 
-    next();
-  }
+        next();
+      }
+    : (req, res, next) => {
+        next();
+      }
 };

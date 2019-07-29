@@ -38,9 +38,6 @@ const conf = {
   log: {
     level: process.env.LOG_LEVEL || 'trace'
   },
-  cacheOpts: {
-    standardTTL: 5
-  },
   mysql: {
     connectionLimit: process.env.DB_CONNECTION_LIMIT,
     host: process.env.DB_HOST,

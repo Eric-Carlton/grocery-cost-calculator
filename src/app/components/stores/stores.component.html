@@ -1,0 +1,43 @@
+<section>
+  <h2>Stores</h2>
+  <form (ngSubmit)="onSubmit()" #storesForm="ngForm">
+    <section *ngFor="let store of stores; index as i">
+      <!-- index is used for [for] and [name] because a new store will have neither a 
+      name nor id on initialization. 1 is added to the index because names need to be truthy -->
+      <label [for]="i + 1">Name: </label>
+      <input
+        [name]="i + 1"
+        type="text"
+        [readonly]="!store.editable"
+        [(ngModel)]="store.name"
+        #name="ngModel"
+        required
+        [unique]="storeNames"
+      />
+      <input
+        (click)="toggleEditable(store)"
+        type="button"
+        [value]="store.editable ? 'Cancel' : 'Edit'"
+      />
+      <input
+        *ngIf="store.id"
+        (click)="deleteStore(store)"
+        type="button"
+        value="Delete"
+      />
+      <span *ngIf="name.invalid && (name.dirty || name.touched)" class="error">
+        <span *ngIf="name.errors.required">Name is required</span>
+        <span *ngIf="name.errors.unique">Name must be unique</span>
+      </span>
+    </section>
+    <section class="submission">
+      <input type="button" value="Add a store" (click)="addStore()" />
+      <button
+        [disabled]="!anyStoresEdited() || !storesForm.valid"
+        type="submit"
+      >
+        Save
+      </button>
+    </section>
+  </form>
+</section>
