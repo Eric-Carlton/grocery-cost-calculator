@@ -6,7 +6,7 @@
         >Select a store...</option
       >
       <option
-        *ngFor="let store of storesService.stores | async"
+        *ngFor="let store of storesService.stores$ | async"
         [ngValue]="store"
         [innerText]="store.name"
       ></option>

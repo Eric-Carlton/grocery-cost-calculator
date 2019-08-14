@@ -28,7 +28,7 @@ export class GroceriesService {
   private refreshGroceries() {
     zip(
       this.http.get(environment.groceriesEndpoint),
-      this.storesService.stores
+      this.storesService.stores$
     ).subscribe(([groceries, stores]: [Object[], Store[]]) => {
       this._groceries.next(
         plainToClass(Grocery, groceries).map(grocery =>

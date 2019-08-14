@@ -14,7 +14,7 @@ export class StoresComponent {
   protected stores: FormStore[] = [];
 
   constructor(protected storesService: StoresService) {
-    this.storesService.stores.subscribe(stores => {
+    this.storesService.stores$.subscribe(stores => {
       this.stores = cloneDeep(stores);
     });
   }
@@ -26,7 +26,7 @@ export class StoresComponent {
         const control = this.form.controls[this.stores.indexOf(store) + 1];
         control.markAsUntouched();
         control.markAsPristine();
-        this.storesService.stores.subscribe(stores => {
+        this.storesService.stores$.subscribe(stores => {
           store.name = stores.find(original => original.id === store.id).name;
         });
       }
