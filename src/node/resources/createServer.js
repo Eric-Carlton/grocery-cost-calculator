@@ -68,11 +68,10 @@ Object.keys(routes).map(key => {
 crudOps.forEach(dir => {
   const router = express.Router(),
     Operations = requireDir(dir, { extensions: ['.js'] }),
-    routeName = path.basename(dir);
+    routeName = path.basename(dir),
+    route = `${apiRoutesPrefix}/${routeName}`;
 
-  log.debug(
-    `Adding CRUD route ${routeName} at path ${apiRoutesPrefix}/${routeName}`
-  );
+  log.debug(`Adding CRUD route ${routeName} at path ${route}`);
 
   Object.keys(Operations).map(key => {
     log.debug(`Adding ${routeName} operation: ${key}`);
@@ -80,7 +79,7 @@ crudOps.forEach(dir => {
     new Operation(router);
   });
 
-  app.use(`${apiRoutesPrefix}/${routeName}`, router);
+  app.use(route, router);
 });
 
 if (conf.express.static) {

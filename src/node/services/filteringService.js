@@ -70,7 +70,8 @@ class FilteringService {
                 ? item[key].toUpperCase()
                 : item[key];
 
-          return caseInsensitiveFilter === caseInsensitiveItem;
+          // == so that "1" is equal to 1
+          return caseInsensitiveFilter == caseInsensitiveItem;
         }
 
         return true;

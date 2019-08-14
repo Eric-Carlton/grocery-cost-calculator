@@ -16,9 +16,6 @@ try {
 }
 
 const conf = {
-  cacheOpts: {
-    standardTTL: 60
-  },
   express: {
     port: process.env.PORT || 3000,
     middlewarePath: 'middleware',
