@@ -6,7 +6,10 @@ class CrudCache {
     key = key.replace(/\?.*/, '');
 
     /**
-     * To isolate the collection here, we're checking if the final route parameter
+     * key looks like /api/collection for POST, /api/collection/id for PUT / DELETE
+     * in both cases we want to return the same value.
+     *
+     * To isolate the collection, we're checking if the final route parameter
      * is a number. If it is, we remove it from the route to create the collectionUri.
      * If it is not, then the collectionUri is equivalent to the key provided minus
      * any query params.
@@ -37,15 +40,8 @@ class CrudCache {
   }
 
   clearCacheForCollection(collectionUri) {
-    /*
-     * key looks like /api/collection for POST, /api/collection/id for PUT / DELETE
-     * in both cases we want to clear any cached values for the stores collection
-     * at /api/stores. To do so, we need to isolate the collection.
-     *
-     * In addition, we only want to clear the cache for keys that match /api/collection,
-     * /api/collection?arbitraryFilter=filterVal, or /api/collection/id where id is the
-     * id of the provided key. Any other ids should remain cached.
-     */
+    // clear the cache for the provided collection, as well as any
+    // cached results for the provided collection with query params
     for (const cacheKey in this.cache) {
       if (
         cacheKey === collectionUri ||
@@ -97,7 +93,9 @@ module.exports = {
         } else {
           const original = res.send;
           res.send = function(body) {
-            if (res.statusCode === 200) {
+            // success could be anything in the 2xx range
+            if (Math.floor(res.statusCode / 200) === 1) {
+              log.trace(`Caching response of GET request ${req.headers.reqid}`);
               cache.store(cacheKey, body);
             }
             res.send = original;
@@ -125,6 +123,7 @@ module.exports = {
           res.send.apply(res, arguments);
         };
 
+        // we set up the cache to be cleared if the request is successful, so allow the request to carry on
         next();
       }
     } else {
