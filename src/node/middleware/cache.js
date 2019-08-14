@@ -33,14 +33,18 @@ function setCache(key, value) {
   };
 }
 
+function clearCacheForKey(key) {
+  delete cache[key];
+}
+
 module.exports = {
   priority: 5,
   use: conf.cacheOpts
     ? (req, res, next) => {
-        if (req.method === 'GET') {
-          const cacheKey = req.url,
-            cachedRes = getCached(cacheKey);
+        const cacheKey = req.url,
+          cachedRes = getCached(cacheKey);
 
+        if (req.method === 'GET') {
           if (cachedRes) {
             log.trace(
               `Responding to ${req.method} request ${req.headers.reqid} to ${req.originalUrl} with cached data`
@@ -59,11 +63,19 @@ module.exports = {
             // no cached response, so continue handling
             return next();
           }
+        } else if (cachedRes) {
+          // PUT / POST / DELETEs modify a collection, so clear the cached GET value if there is one
+          log.trace(
+            `Clearing GET cache for ${cacheKey} because of ${req.method} request ${req.headers.reqid} to ${req.originalUrl}`
+          );
+          clearCacheForKey(cacheKey);
+          return next();
         }
 
         next();
       }
     : (req, res, next) => {
+        // no cacheOpts? Then this is a noop
         next();
       }
 };

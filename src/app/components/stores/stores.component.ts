@@ -2,7 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { StoresService } from 'src/app/services/stores/stores.service';
 import { cloneDeep } from 'lodash';
 import { FormStore } from 'src/app/models/formStore.model';
-import { NgForm, Form } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-stores',
