@@ -1,5 +1,6 @@
-export class Grocery {
-  id: number;
+import { CrudItem } from './crudItem.model';
+
+export class Grocery extends CrudItem {
   name: string;
   unit: string;
   costPerUnit: string;

@@ -14,7 +14,7 @@ export class StoresComponent {
   protected stores: FormStore[] = [];
 
   constructor(protected storesService: StoresService) {
-    this.storesService.stores$.subscribe(stores => {
+    this.storesService.collection$.subscribe(stores => {
       this.stores = cloneDeep(stores);
     });
   }
@@ -26,7 +26,7 @@ export class StoresComponent {
         const control = this.form.controls[this.stores.indexOf(store) + 1];
         control.markAsUntouched();
         control.markAsPristine();
-        this.storesService.stores$.subscribe(stores => {
+        this.storesService.collection$.subscribe(stores => {
           store.name = stores.find(original => original.id === store.id).name;
         });
       }
@@ -59,10 +59,10 @@ export class StoresComponent {
     this.stores
       .filter(store => !store.id)
       .forEach(store => {
-        this.storesService.addStore(store);
+        this.storesService.create(store);
       });
     this.stores
       .filter(store => store.id && store.editable)
-      .forEach(store => this.storesService.updateStore(store));
+      .forEach(store => this.storesService.update(store));
   }
 }

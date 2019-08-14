@@ -6,7 +6,7 @@
         >Select a store...</option
       >
       <option
-        *ngFor="let store of storesService.stores$ | async"
+        *ngFor="let store of storesService.collection$ | async"
         [ngValue]="store"
         [innerText]="store.name"
       ></option>
@@ -32,7 +32,7 @@
         >Select a grocery...</option
       >
       <option
-        *ngFor="let grocery of groceriesService.groceries | async"
+        *ngFor="let grocery of groceriesService.collection$ | async"
         [ngValue]="grocery"
         [innerText]="grocery.name"
       ></option>
