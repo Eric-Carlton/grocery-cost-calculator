@@ -14,7 +14,7 @@ const conf = require('../../conf/app.conf'),
 class Delete {
   constructor(router) {
     log.debug(
-      `${path.basename(__dirname)} operation: create has one route: DELETE /:id`
+      `${path.basename(__dirname)} operation: delete has one route: DELETE /:id`
     );
     router.delete(
       '/:id',

@@ -15,7 +15,7 @@ const conf = require('../../conf/app.conf'),
 class Update {
   constructor(router) {
     log.debug(
-      `${path.basename(__dirname)} operation: create has one route: PUT /:id`
+      `${path.basename(__dirname)} operation: update has one route: PUT /:id`
     );
     router.put(
       '/:id',
