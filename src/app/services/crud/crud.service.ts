@@ -26,7 +26,7 @@ export abstract class CrudService<T extends CrudItem> {
   protected refreshCollection() {
     this.http.get(this.endpoint).subscribe((collection: Object[]) => {
       this.collection = plainToClass(this.modelClass, collection);
-      this.sortCollection;
+      this.sortCollection();
       this.subject.next(this.collection);
     });
   }
