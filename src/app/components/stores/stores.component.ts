@@ -48,7 +48,7 @@ export class StoresComponent {
   }
 
   protected deleteStore(store: FormStore) {
-    this.storesService.deleteStore(store);
+    this.storesService.delete(store);
   }
 
   get storeNames(): string[] {

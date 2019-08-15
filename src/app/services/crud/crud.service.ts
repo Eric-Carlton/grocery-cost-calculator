@@ -49,7 +49,7 @@ export abstract class CrudService<T extends CrudItem> {
     });
   }
 
-  deleteStore(item: T) {
+  delete(item: T) {
     this.http.delete(`${this.endpoint}/${item.id}`).subscribe(() => {
       this.collection.splice(
         this.collection.findIndex(el => el.id === item.id),
