@@ -1,7 +1,6 @@
 'use strict';
 
 const DB = require('../services/database'),
-  Filter = require('../services/filteringService'),
   Formatter = require('../services/formattingService'),
   { validationResult } = require('express-validator'),
   AbstractCrudOperation = require('./abstract-crud-operation');
