@@ -70,7 +70,9 @@ const conf = require('../conf/app.conf'),
   cache = new CrudCache(),
   bunyan = require('bunyan'),
   log = bunyan.createLogger({
-    name: 'crudCache.js',
+    name: `${path.basename(__dirname)}/${path
+      .basename(__filename)
+      .replace(/\.js/, '')}`,
     level: conf.log.level
   });
 

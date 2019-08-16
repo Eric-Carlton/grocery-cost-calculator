@@ -1,8 +1,11 @@
 'use strict';
 
 const bunyan = require('bunyan'),
+  path = require('path'),
   log = bunyan.createLogger({
-    name: 'app.conf.js',
+    name: `${path.basename(__dirname)}/${path
+      .basename(__filename)
+      .replace(/\.js/, '')}`,
     level: 'info'
   });
 

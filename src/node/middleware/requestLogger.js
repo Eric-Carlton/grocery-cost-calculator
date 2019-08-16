@@ -2,8 +2,11 @@
 
 const conf = require('../conf/app.conf'),
   bunyan = require('bunyan'),
+  path = require('path'),
   log = bunyan.createLogger({
-    name: 'requestLogger.js',
+    name: `${path.basename(__dirname)}/${path
+      .basename(__filename)
+      .replace(/\.js/, '')}`,
     level: conf.log.level
   });
 

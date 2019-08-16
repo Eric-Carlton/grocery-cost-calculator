@@ -5,7 +5,9 @@ const conf = require('../conf/app.conf'),
   path = require('path'),
   bunyan = require('bunyan'),
   log = bunyan.createLogger({
-    name: 'routes/health-check.js',
+    name: `${path.basename(__dirname)}/${path
+      .basename(__filename)
+      .replace(/\.js/, '')}`,
     level: conf.log.level
   });
 

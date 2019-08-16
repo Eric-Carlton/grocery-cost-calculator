@@ -8,7 +8,9 @@ const express = require('express'),
   bunyan = require('bunyan'),
   app = express(),
   log = bunyan.createLogger({
-    name: 'createServer.js',
+    name: `${path.basename(__dirname)}/${path
+      .basename(__filename)
+      .replace(/\.js/, '')}`,
     level: conf.log.level
   }),
   middleware = requireDir(
