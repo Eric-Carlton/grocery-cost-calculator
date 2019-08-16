@@ -1,85 +1,48 @@
 'use strict';
 
 const conf = require('../../conf/app.conf'),
-  DB = require('../../services/database'),
-  { body, validationResult } = require('express-validator'),
-  bunyan = require('bunyan'),
+  { body } = require('express-validator'),
   path = require('path'),
-  log = bunyan.createLogger({
-    name: 'stores/create.js',
-    level: conf.log.level
-  }),
-  Formatter = require('../../services/formattingService'),
-  Filter = require('../../services/filteringService');
+  AbstractCreate = require('../../abstract-crud-operations/abstract-create');
 
-class Create {
+class Create extends AbstractCreate {
+  get table() {
+    return conf.dbTables.stores;
+  }
+
+  get validator() {
+    return [
+      body('name')
+        .exists()
+        .withMessage('missing a required parameter')
+        .isLength({ min: 1, max: 256 })
+        .withMessage('must be between 1 and 256 characters')
+    ];
+  }
+
+  get allowedFields() {
+    return ['name'];
+  }
+
   constructor(router) {
-    log.debug(
-      `${path.basename(__dirname)} operation: create has one route: POST /`
-    );
-    router.post(
-      '/',
-      [
-        body('name')
-          .exists()
-          .withMessage('missing a required parameter')
-          .isLength({ min: 1, max: 256 })
-          .withMessage('must be between 1 and 256 characters')
-      ],
-      this.createStore
+    super(
+      router,
+      path.basename(__dirname),
+      path.basename(__filename).replace(/\.js/, '')
     );
   }
 
-  createStore(req, res) {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      const errorMap = errors.mapped();
-
-      log.error(`Bad request for ${req.headers.reqid}: `, errorMap);
-
-      return res.status(400).json({ errors: errorMap });
-    } else {
-      const formatter = new Formatter(req),
-        filter = new Filter(req);
-
-      req.body = filter.filterNullValues(
-        formatter.formatKeysCamelToSnake(
-          filter.filterObjectOnlyKnownKeys(req.body, ['name'])
-        )
-      );
-
-      const db = new DB(req, conf.dbTables.stores);
-
-      db.create(req.body)
-        .then(() => {
-          return db.get(req.body);
-        })
-        .then(result => {
-          if (result[0]) {
-            res.status(201).json(formatter.formatKeysSnakeToCamel(result[0]));
-          } else {
-            res.status(500).send();
-          }
-        })
-        .catch(err => {
-          if (err.code === 'ER_DUP_ENTRY') {
-            res.status(409).json({
-              errors: {
-                name: {
-                  value: req.body.name,
-                  msg: 'unable to add duplicate entry',
-                  param: 'name',
-                  location: 'body'
-                }
-              }
-            });
-          } else {
-            log.error(`Error processing ${req.headers.reqid}: ${err}`);
-            res.status(500).send();
-          }
-        });
-    }
+  createDupEntryError(req) {
+    return {
+      errors: {
+        name: {
+          value: req.body.name,
+          msg: 'unable to add duplicate entry',
+          param: 'name',
+          location: 'body'
+        }
+      }
+    };
   }
 }
 

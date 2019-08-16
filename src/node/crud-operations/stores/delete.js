@@ -1,68 +1,31 @@
 'use strict';
 
 const conf = require('../../conf/app.conf'),
-  DB = require('../../services/database'),
-  { param, validationResult } = require('express-validator'),
-  bunyan = require('bunyan'),
+  { param } = require('express-validator'),
   path = require('path'),
-  log = bunyan.createLogger({
-    name: 'stores/delete.js',
-    level: conf.log.level
-  }),
-  Formatter = require('../../services/formattingService');
+  AbstractDelete = require('../../abstract-crud-operations/abstract-delete');
 
-class Delete {
-  constructor(router) {
-    log.debug(
-      `${path.basename(__dirname)} operation: delete has one route: DELETE /:id`
-    );
-    router.delete(
-      '/:id',
-      [
-        param('id')
-          .exists()
-          .withMessage('missing a required parameter')
-          .isNumeric()
-          .withMessage('must be numeric')
-      ],
-      this.deleteStore
-    );
+class Delete extends AbstractDelete {
+  get table() {
+    return conf.dbTables.stores;
   }
 
-  deleteStore(req, res) {
-    const errors = validationResult(req);
+  get validator() {
+    return [
+      param('id')
+        .exists()
+        .withMessage('missing a required parameter')
+        .isNumeric()
+        .withMessage('must be numeric')
+    ];
+  }
 
-    if (!errors.isEmpty()) {
-      const errorMap = errors.mapped();
-
-      log.error(`Bad request for ${req.headers.reqid}: `, errorMap);
-
-      return res.status(400).json({ errors: errorMap });
-    } else {
-      const db = new DB(req, conf.dbTables.stores);
-
-      let toDelete;
-
-      db.get({ id: req.params.id })
-        .then(result => {
-          if (result[0]) {
-            toDelete = result[0];
-            return db.delete(toDelete);
-          } else {
-            return res.status(404).send();
-          }
-        })
-        .then(() => {
-          // if there's nothing to delete, then we've already sent back a 404
-          if (toDelete) {
-            res.json(new Formatter(req).formatKeysSnakeToCamel(toDelete));
-          }
-        })
-        .catch(err => {
-          log.error(`Error processing ${req.headers.reqid}: ${err}`);
-          res.status(500).send();
-        });
-    }
+  constructor(router) {
+    super(
+      router,
+      path.basename(__dirname),
+      path.basename(__filename).replace(/\.js/, '')
+    );
   }
 }
 

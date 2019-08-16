@@ -12,7 +12,9 @@ const conf = require('../conf/app.conf'),
 class ClientLogger {
   constructor(router) {
     log.debug(
-      `${path.basename(__dirname)} operation: read has one route: POST /`
+      `/${path
+        .basename(__filename)
+        .replace(/\.js/, '')} has one operation: POST /`
     );
     router.post(
       '/',

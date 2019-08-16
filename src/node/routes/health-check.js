@@ -12,7 +12,9 @@ const conf = require('../conf/app.conf'),
 class HealthCheck {
   constructor(router) {
     log.debug(
-      `${path.basename(__dirname)} operation: read has one:  route GET /`
+      `/${path
+        .basename(__filename)
+        .replace(/\.js/, '')} has one operation: GET /`
     );
     router.get('/', (req, res) => {
       // health isn't an actual table, just passing in something for logging purposes
