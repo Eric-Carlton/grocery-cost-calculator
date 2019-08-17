@@ -21,11 +21,16 @@ class Delete extends AbstractDelete {
   }
 
   constructor(router) {
-    super(
-      router,
-      path.basename(__dirname),
-      path.basename(__filename).replace(/\.js/, '')
+    const collection = path.basename(__dirname),
+      operation = path.basename(__filename).replace(/\.js/, '');
+
+    super(collection, operation);
+
+    this.log.debug(
+      `/${collection}/${operation} has one operation: DELETE /:id`
     );
+
+    router.delete('/:id', this.validator, this.delete.bind(this));
   }
 }
 

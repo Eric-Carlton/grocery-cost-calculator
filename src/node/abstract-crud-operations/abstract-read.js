@@ -7,7 +7,11 @@ const DB = require('../services/database'),
   AbstractCrudOperation = require('./abstract-crud-operation');
 
 class AbstractRead extends AbstractCrudOperation {
-  constructor(router, collection, operation) {
+  constructor(
+    collection,
+    operation,
+    config = { disableGetAll: false, disableGetById: false }
+  ) {
     super(collection, operation);
 
     if (this.constructor === AbstractRead) {
@@ -16,30 +20,27 @@ class AbstractRead extends AbstractCrudOperation {
       );
     }
 
-    if (this.getAllValidator === undefined) {
-      throw new TypeError(
-        'Classes extending AbstractRead must implement a getAllValidator property'
-      );
+    if (!config.disableGetAll) {
+      if (this.getAllValidator === undefined) {
+        throw new TypeError(
+          'Classes extending AbstractRead must implement a getAllValidator property'
+        );
+      }
+
+      if (this.allowedFields === undefined) {
+        throw new TypeError(
+          'Classes extending AbstractRead must implement an allowedFields property'
+        );
+      }
     }
 
-    if (this.getByIdValidator === undefined) {
-      throw new TypeError(
-        'Classes extending AbstractRead must implement a getByIdValidator property'
-      );
+    if (!config.disableGetById) {
+      if (this.getByIdValidator === undefined) {
+        throw new TypeError(
+          'Classes extending AbstractRead must implement a getByIdValidator property'
+        );
+      }
     }
-
-    if (this.allowedFields === undefined) {
-      throw new TypeError(
-        'Classes extending AbstractCrudOperation must implement an allowedFields property'
-      );
-    }
-
-    this.log.debug(
-      `/${collection}/${operation} has two operations: GET /:id, GET /`
-    );
-
-    router.get('/:id', this.getByIdValidator, this.getById.bind(this));
-    router.get('/', this.getAllValidator, this.getAll.bind(this));
   }
 
   getById(req, res) {

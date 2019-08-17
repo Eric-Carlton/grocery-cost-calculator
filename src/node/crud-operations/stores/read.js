@@ -34,10 +34,16 @@ class Read extends AbstractRead {
   }
 
   constructor(router) {
-    super(
-      router,
-      path.basename(__dirname),
-      path.basename(__filename).replace(/\.js/, '')
+    const collection = path.basename(__dirname),
+      operation = path.basename(__filename).replace(/\.js/, '');
+
+    super(collection, operation);
+
+    router.get('/:id', this.getByIdValidator, this.getById.bind(this));
+    router.get('/', this.getAllValidator, this.getAll.bind(this));
+
+    this.log.debug(
+      `/${collection}/${operation} has two operations: GET /, GET /:id`
     );
   }
 }

@@ -6,7 +6,7 @@ const DB = require('../services/database'),
   AbstractCrudOperation = require('./abstract-crud-operation');
 
 class AbstractDelete extends AbstractCrudOperation {
-  constructor(router, collection, operation) {
+  constructor(collection, operation) {
     super(collection, operation);
 
     if (this.constructor === AbstractDelete) {
@@ -20,12 +20,6 @@ class AbstractDelete extends AbstractCrudOperation {
         'Classes extending AbstractDelete must implement a validator property'
       );
     }
-
-    this.log.debug(
-      `/${collection}/${operation} has one operation: DELETE /:id`
-    );
-
-    router.delete('/:id', this.validator, this.delete.bind(this));
   }
 
   delete(req, res) {

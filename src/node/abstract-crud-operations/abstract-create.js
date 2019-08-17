@@ -7,7 +7,7 @@ const DB = require('../services/database'),
   AbstractCrudOperation = require('./abstract-crud-operation');
 
 class AbstractCreate extends AbstractCrudOperation {
-  constructor(router, collection, operation) {
+  constructor(collection, operation) {
     super(collection, operation);
 
     if (this.constructor === AbstractCreate) {
@@ -33,10 +33,6 @@ class AbstractCreate extends AbstractCrudOperation {
         'Classes extending AbstractCreate must implement a createDupEntryError function'
       );
     }
-
-    this.log.debug(`/${collection}/${operation} has one operation: POST /`);
-
-    router.post('/', this.validator, this.create.bind(this));
   }
 
   create(req, res) {

@@ -29,11 +29,14 @@ class Update extends AbstractUpdate {
   }
 
   constructor(router) {
-    super(
-      router,
-      path.basename(__dirname),
-      path.basename(__filename).replace(/\.js/, '')
-    );
+    const collection = path.basename(__dirname),
+      operation = path.basename(__filename).replace(/\.js/, '');
+
+    super(collection, operation);
+
+    router.put('/:id', this.validator, this.update.bind(this));
+
+    this.log.debug(`/${collection}/${operation} has one operation: PUT /:id`);
   }
 
   createDupEntryError(req) {

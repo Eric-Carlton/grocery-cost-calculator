@@ -35,11 +35,14 @@ class Create extends AbstractCreate {
   }
 
   constructor(router) {
-    super(
-      router,
-      path.basename(__dirname),
-      path.basename(__filename).replace(/\.js/, '')
-    );
+    const collection = path.basename(__dirname),
+      operation = path.basename(__filename).replace(/\.js/, '');
+
+    super(collection, operation);
+
+    this.log.debug(`/${collection}/${operation} has one operation: POST /`);
+
+    router.post('/', this.validator, this.create.bind(this));
   }
 
   createDupEntryError(req) {
