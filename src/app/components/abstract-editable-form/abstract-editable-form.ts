@@ -6,7 +6,7 @@ import { cloneDeep } from 'lodash';
 import { NgForm } from '@angular/forms';
 
 @Component({})
-export abstract class AbstractEditableFormComponent<T extends CrudItem> {
+export abstract class AbstractEditableForm<T extends CrudItem> {
   @ViewChild('editableForm', { static: true }) form: NgForm;
   protected rows: T[] & EditableItem[] = [];
 
