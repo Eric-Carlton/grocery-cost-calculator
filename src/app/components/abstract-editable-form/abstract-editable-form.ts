@@ -1,15 +1,13 @@
-import { Component, ViewChild } from '@angular/core';
+import { ViewChild, Component } from '@angular/core';
 import { CrudItem } from 'src/app/models/crud-item.model';
 import { CrudService } from 'src/app/services/crud/crud.service';
 import { EditableItem } from 'src/app/models/editable-item.model';
 import { cloneDeep } from 'lodash';
 import { NgForm } from '@angular/forms';
 
-@Component({
-  selector: 'app-editable-form'
-})
-export abstract class EditableFormComponent<T extends CrudItem> {
-  @ViewChild('editableForm', { static: false }) form: NgForm;
+@Component({})
+export abstract class AbstractEditableFormComponent<T extends CrudItem> {
+  @ViewChild('editableForm', { static: true }) form: NgForm;
   protected rows: T[] & EditableItem[] = [];
 
   constructor(protected crudService: CrudService<T>) {
