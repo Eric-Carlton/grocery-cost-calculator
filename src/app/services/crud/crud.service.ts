@@ -2,7 +2,7 @@ import { ReplaySubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { plainToClass } from 'class-transformer';
 import { ClassType } from 'class-transformer/ClassTransformer';
-import { CrudItem } from 'src/app/models/crudItem.model';
+import { CrudItem } from 'src/app/models/crud-item.model';
 
 export abstract class CrudService<T extends CrudItem> {
   protected subject: ReplaySubject<T[]> = new ReplaySubject(1);

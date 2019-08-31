@@ -1,6 +1,5 @@
-import { CrudItem } from './crudItem.model';
+import { CrudItem } from './crud-item.model';
 
 export class Store extends CrudItem {
   name: string;
-  lastUpdatedDate: string;
 }

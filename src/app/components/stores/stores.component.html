@@ -1,29 +1,33 @@
 <section>
   <h2>Stores</h2>
-  <form (ngSubmit)="onSubmit()" #storesForm="ngForm">
-    <section *ngFor="let store of stores; index as i">
+  <form (ngSubmit)="onSubmit()" #editableForm="ngForm">
+    <section
+      *ngFor="let row of rows; index as i"
+      [ngClass]="{ deleteOnSave: row.markedForDeletion }"
+    >
       <!-- index is used for [for] and [name] because a new store will have neither a 
       name nor id on initialization. 1 is added to the index because names need to be truthy -->
       <label [for]="i + 1">Name: </label>
       <input
         [name]="i + 1"
         type="text"
-        [readonly]="!store.editable"
-        [(ngModel)]="store.name"
+        [readonly]="!row.editable"
+        [(ngModel)]="row.name"
         #name="ngModel"
         required
         [unique]="storeNames"
       />
       <input
-        (click)="toggleEditable(store)"
+        (click)="toggleEditable(row)"
         type="button"
-        [value]="store.editable ? 'Cancel' : 'Edit'"
+        [value]="row.editable ? 'Cancel' : 'Edit'"
+        [disabled]="row.markedForDeletion"
       />
       <input
-        *ngIf="store.id"
-        (click)="deleteStore(store)"
+        *ngIf="row.id"
+        (click)="toggleMarkForDeletion(row)"
         type="button"
-        value="Delete"
+        [value]="row.markedForDeletion ? 'Preserve' : 'Delete'"
       />
       <span *ngIf="name.invalid && (name.dirty || name.touched)" class="error">
         <span *ngIf="name.errors.required">Name is required</span>
@@ -31,12 +35,12 @@
       </span>
     </section>
     <section class="submission">
-      <input type="button" value="Add a store" (click)="addStore()" />
+      <input type="button" value="Add a store" (click)="addRow()" />
       <button
-        [disabled]="!anyStoresEdited() || !storesForm.valid"
+        [disabled]="!anyRowsEdited() || !editableForm.valid"
         type="submit"
       >
-        Save
+        Save Changes
       </button>
     </section>
   </form>

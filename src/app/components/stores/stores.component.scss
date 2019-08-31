@@ -7,3 +7,9 @@
   color: red;
   padding-left: 1em;
 }
+
+.deleteOnSave {
+  input[type='text'] {
+    color: red;
+  }
+}

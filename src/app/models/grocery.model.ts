@@ -1,4 +1,4 @@
-import { CrudItem } from './crudItem.model';
+import { CrudItem } from './crud-item.model';
 
 export class Grocery extends CrudItem {
   name: string;
@@ -6,5 +6,4 @@ export class Grocery extends CrudItem {
   costPerUnit: string;
   storeId: number;
   storeName: string;
-  lastUpdatedDate: string;
 }
