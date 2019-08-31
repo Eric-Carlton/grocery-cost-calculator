@@ -19,20 +19,20 @@ export abstract class EditableFormComponent<T extends CrudItem> {
   }
 
   protected toggleEditable(row: T & EditableItem): void {
-    // if an row does not have an ID, then you can't cancel an edit - you can only remove it from the form
+    // if a row does not have an ID, then you can't cancel an edit - you can only remove it from the form
     if (row.id) {
       if (row.editable) {
         const control = this.form.controls[this.rows.indexOf(row) + 1];
         control.markAsUntouched();
         control.markAsPristine();
         this.crudService.collection$.subscribe(rows => {
-          const uneditedItem = rows.find(original => original.id === row.id);
+          const uneditedRow = rows.find(original => original.id === row.id);
 
           // Don't change the values of any properties associated with
           // form functions - only revert properties associated with the
           // underlying CRUD item
-          for (const property in uneditedItem) {
-            (row as T)[property] = uneditedItem[property];
+          for (const property in uneditedRow) {
+            (row as T)[property] = uneditedRow[property];
           }
         });
       }
